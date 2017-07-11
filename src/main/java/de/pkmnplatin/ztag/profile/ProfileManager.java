@@ -32,6 +32,9 @@ public class ProfileManager implements Listener {
             String realName = player.getMetadata("zTag").get(2).asString();
             tp = new TagProfile(player, realName, tag, skin);
         } else {
+            if (player.hasMetadata("zTag")) {
+                player.removeMetadata("zTag", TagBase.getInstance());
+            }
             tp = new TagProfile(player, UUIDFetcher.getName(player.getUniqueId()), player.getName(), player.getName());
             player.setMetadata("zTag", new FixedMetadataValue(TagBase.getInstance(), tp.getTag()));
             player.setMetadata("zTag", new FixedMetadataValue(TagBase.getInstance(), tp.getSkin()));
