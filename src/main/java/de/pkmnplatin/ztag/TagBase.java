@@ -5,6 +5,7 @@ import de.pkmnplatin.ztag.reflect.Version;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
 
 /**
  * Created by Jona on 16.06.2017.
@@ -30,6 +31,12 @@ public class TagBase extends JavaPlugin {
     @Override
     public void onEnable() {
         TagBase.instance = this;
+        try {
+            Metrics metrics = new Metrics(this);
+            metrics.start();
+        } catch (Exception ex) {
+            log(ex);
+        }
         this.profileManager = new ProfileManager();
         this.version = Version.detectServerVersion();
         if (this.version.equals(Version.UNKNOWN)) {
