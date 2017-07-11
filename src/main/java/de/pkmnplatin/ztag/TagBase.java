@@ -18,12 +18,21 @@ public class TagBase extends JavaPlugin {
     private Version version;
     private ProfileManager profileManager;
 
+    public static void log(String msg) {
+        instance.getLogger().info(msg);
+    }
+
+    public static void log(Exception ex) {
+        log(ex.getMessage());
+        ex.printStackTrace();
+    }
+
     @Override
     public void onEnable() {
         TagBase.instance = this;
         this.profileManager = new ProfileManager();
         this.version = Version.detectServerVersion();
-        if(this.version.equals(Version.UNKNOW)) {
+        if (this.version.equals(Version.UNKNOWN)) {
             log("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= zTag =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
             log("Your Spigot-Version isn't compatible with this Version of zTag!");
             log("Please use a Spigot from " + Version.values()[Version.values().length - 1] + " to " + Version.values()[1] + "!");
@@ -35,15 +44,6 @@ public class TagBase extends JavaPlugin {
             log("zTag should work without any issues!");
             log("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= zTag =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
         }
-    }
-
-    public static void log(String msg) {
-        instance.getLogger().info(msg);
-    }
-
-    public static void log(Exception ex) {
-        log(ex.getMessage());
-        ex.printStackTrace();
     }
 
 }

@@ -8,7 +8,7 @@ import org.bukkit.Bukkit;
  */
 public enum Version {
 
-    UNKNOW("Before 1.8", 0000),
+    UNKNOWN("Before 1.8", 0000),
     v1_12_R1("1.12.0", 1121),
     v1_11_R1("1.11.0 - 1.11.2", 1111),
     v1_10_R1("1.10.0 - 1.10.2", 1101),
@@ -26,6 +26,16 @@ public enum Version {
         this.versionId = versionId;
     }
 
+    public static Version detectServerVersion() {
+        String versionString = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        for (Version v : Version.values()) {
+            if (versionString.equals(v.toString())) {
+                return v;
+            }
+        }
+        return Version.UNKNOWN;
+    }
+
     public boolean isVersion(Version version) {
         return this.getVersionId() == version.getVersionId();
     }
@@ -36,16 +46,6 @@ public enum Version {
 
     public boolean isOlderThan(Version version) {
         return this.getVersionId() < version.getVersionId();
-    }
-
-    public static Version detectServerVersion() {
-        String versionString = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-        for(Version v : Version.values()) {
-            if(versionString.equals(v.toString())) {
-                return v;
-            }
-        }
-        return Version.UNKNOW;
     }
 
 
