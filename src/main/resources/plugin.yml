@@ -1,0 +1,4 @@
+name: zTag
+version: 2.0
+main: de.pkmnplatin.ztag.TagBase
+author: PKMNPlatin
