@@ -31,17 +31,11 @@ public class GameProfileFetcher {
             return gameProfileCache.get(uuid);
         } else {
             try {
-                HttpURLConnection con = (HttpURLConnection) new URL("https://api.minetools.eu/profile/" + uuid.toString().replaceAll("-", "")).openConnection();
+                HttpURLConnection con = (HttpURLConnection) new URL("https://use.gameapis.net/mc/player/profile/" + uuid).openConnection();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                String line;
-                StringBuilder builder = new StringBuilder();
-                while ((line = reader.readLine()) != null) {
-                    builder.append(line);
-                }
+                JsonObject main = gson.fromJson(reader, JsonElement.class).getAsJsonObject();
                 reader.close();
                 con.disconnect();
-
-                JsonObject main = gson.fromJson(builder.toString(), JsonElement.class).getAsJsonObject().get("raw").getAsJsonObject();
                 String id = main.get("id").getAsString();
                 String name = main.get("name").getAsString();
                 main = main.get("properties").getAsJsonArray().get(0).getAsJsonObject();

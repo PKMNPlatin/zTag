@@ -34,10 +34,8 @@ public class zTagEvent extends Event {
     @Setter(AccessLevel.NONE) private Player player;
     @Setter(AccessLevel.NONE) private TagProfile profile;
     @Setter(AccessLevel.NONE) private List<Player> players = new ArrayList<Player>();
-    @Setter(AccessLevel.NONE) private boolean tagChanged = false;
-    @Setter(AccessLevel.NONE) private boolean skinChanged = false;
 
-    private boolean updateChunk = false;
+    private boolean updateChunk = true;
     private boolean forceSkinUpdate = true;
     private String tag;
     private String skin;
@@ -55,23 +53,17 @@ public class zTagEvent extends Event {
         this.skin = skin;
         this.profile.setTag(tag);
         this.profile.setSkin(skin);
-        this.tagChanged = !zTag.getTag(player).equalsIgnoreCase(tag);
-        this.skinChanged = !zTag.getSkin(player).equalsIgnoreCase(skin);
 
         try {
             GameProfile gp = getGameProfile(player);
-            if (this.skinChanged) {
-                gp = fixSkin(gp, skin);
-            }
+            gp = fixSkin(gp, skin);
             setValue(gp, gp.getClass(), "name", tag);
-
+            player.setDisplayName(gp.getName());
             int entityId = getEntityId(player);
             Object despawnPacket = getDestroyPacket(entityId);
             Object removePlayer = getInfoPacket("REMOVE_PLAYER", gp, -1, null, null);
-
             Object spawnPacket = getSpawnPacket(player);
             Object addPlayer = getInfoPacket("ADD_PLAYER", gp, Reflection.getPing(player), player.getGameMode(), tag);
-
             Object respawnPacket = getRespawnPacket(player, player.getWorld());
 
             final boolean flying = player.isFlying();
@@ -81,7 +73,7 @@ public class zTagEvent extends Event {
             final double maxHealth = player.getMaxHealth();
             final double health = player.getHealth();
 
-            if (forceSkinUpdate && skinChanged) {
+            if(forceSkinUpdate) {
                 sendPacket(player, removePlayer);
                 sendPacket(player, respawnPacket);
                 sendPacket(player, addPlayer);
@@ -126,7 +118,6 @@ public class zTagEvent extends Event {
         if (uuid == null) {
             return gp;
         }
-
         GameProfile fetched = GameProfileFetcher.getGameProfile(uuid);
         if(fetched != null) {
             Collection<Property> props = fetched.getProperties().get("textures");

@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.util.UUIDTypeAdapter;
+import com.mysql.jdbc.StringUtils;
 import de.pkmnplatin.ztag.TagBase;
 
 import java.io.BufferedReader;
@@ -28,35 +29,22 @@ public class UUIDFetcher {
             return nameCache.get(uuid);
         }
         try {
-            HttpURLConnection con = (HttpURLConnection) new URL("https://api.minetools.eu/uuid/" + uuid.toString().replaceAll("-", "")).openConnection();
+            HttpURLConnection con = (HttpURLConnection) new URL("https://use.gameapis.net/mc/player/profile/" + uuid.toString()).openConnection();
             BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String line;
-            StringBuilder builder = new StringBuilder();
-            while((line = reader.readLine()) != null) {
-                builder.append(line);
-            }
-            con.disconnect();
+            JsonObject main = gson.fromJson(reader, JsonElement.class).getAsJsonObject();
             reader.close();
-
-            JsonObject main = gson.fromJson(builder.toString(), JsonElement.class).getAsJsonObject();
+            con.disconnect();
             String name = main.get("name").getAsString();
             String sId = main.get("id").getAsString();
-
-            if(sId.equals("null") || sId == null || sId.toString().isEmpty() || sId.toString().equals("")) {
+            if((! isValid(name) && isValid(sId))) {
                 return null;
             }
-
             UUID id = UUIDTypeAdapter.fromString(sId);
-
-            if(name.equals("null") || name == null || name.isEmpty() || name.equals("")) {
-                return null;
-            }
-
-            if(id.equals("null") || id == null || id.toString().isEmpty() || id.toString().equals("")) {
+            if(! (isValid(id.toString()))) {
                 return null;
             }
             nameCache.put(id, name);
-            uuidCache.put(name.toLowerCase(), id);
+            uuidCache.put(name, id);
             return name;
         } catch (Exception ex) {
             TagBase.log(ex);
@@ -69,40 +57,34 @@ public class UUIDFetcher {
             return uuidCache.get(name.toLowerCase());
         }
         try {
-            HttpURLConnection con = (HttpURLConnection) new URL("https://api.minetools.eu/uuid/" + name).openConnection();
+            HttpURLConnection con = (HttpURLConnection) new URL("https://use.gameapis.net/mc/player/profile/" + name).openConnection();
             BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String line;
-            StringBuilder builder = new StringBuilder();
-            while((line = reader.readLine()) != null) {
-                builder.append(line);
-            }
+            JsonObject main = gson.fromJson(reader, JsonElement.class).getAsJsonObject();
             reader.close();
             con.disconnect();
-
-            JsonObject main = gson.fromJson(builder.toString(), JsonElement.class).getAsJsonObject();
             String nme = main.get("name").getAsString();
             String sId = main.get("id").getAsString();
-
-            if(sId.equals("null") || sId == null || sId.toString().isEmpty() || sId.toString().equals("")) {
+            if((! isValid(name) && isValid(sId))) {
                 return null;
             }
-
             UUID id = UUIDTypeAdapter.fromString(sId);
-
-            if(name.equals("null") || name == null || name.isEmpty() || name.equals("")) {
-                return null;
-            }
-
-            if(id.equals("null") || id == null || id.toString().isEmpty() || id.toString().equals("")) {
+            if(! (isValid(id.toString()))) {
                 return null;
             }
             nameCache.put(id, nme);
-            uuidCache.put(nme.toLowerCase(), id);
+            uuidCache.put(nme, id);
             return id;
         } catch (Exception ex) {
             TagBase.log(ex);
         }
         return null;
+    }
+
+    private static boolean isValid(String string) {
+        if(StringUtils.isNullOrEmpty(string) || string.equals("null")) {
+            return false;
+        }
+        return true;
     }
 
 }
