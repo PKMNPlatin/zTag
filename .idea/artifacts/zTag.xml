@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="zTag">
+    <output-path>$PROJECT_DIR$/../../../server/plugins</output-path>
+    <root id="archive" name="zTag.jar">
+      <element id="module-output" name="zTag" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.4/lombok-1.18.4.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

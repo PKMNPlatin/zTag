@@ -25,7 +25,7 @@ public class ProfileManager implements Listener {
     }
 
     public TagProfile getProfile(Player player) {
-        TagProfile tp = null;
+        TagProfile tp;
         if(player.hasMetadata("zTag") && player.getMetadata("zTag").size() == 3) {
             String tag = player.getMetadata("zTag").get(0).asString();
             String skin = player.getMetadata("zTag").get(1).asString();
@@ -36,9 +36,7 @@ public class ProfileManager implements Listener {
                 player.removeMetadata("zTag", TagBase.getInstance());
             }
             tp = new TagProfile(player, UUIDFetcher.getName(player.getUniqueId()), player.getName(), player.getName());
-            player.setMetadata("zTag", new FixedMetadataValue(TagBase.getInstance(), tp.getTag()));
-            player.setMetadata("zTag", new FixedMetadataValue(TagBase.getInstance(), tp.getSkin()));
-            player.setMetadata("zTag", new FixedMetadataValue(TagBase.getInstance(), tp.getRealName()));
+            updateProfile(player, tp);
         }
         return tp;
     }

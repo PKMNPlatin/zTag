@@ -20,6 +20,8 @@ import java.util.UUID;
  */
 public class UUIDFetcher {
 
+    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
+
     private static HashMap<UUID, String> nameCache = new HashMap<>();
     private static HashMap<String, UUID> uuidCache = new HashMap<>();
     private static Gson gson = new GsonBuilder().create();
@@ -30,6 +32,7 @@ public class UUIDFetcher {
         }
         try {
             HttpURLConnection con = (HttpURLConnection) new URL("https://use.gameapis.net/mc/player/profile/" + uuid.toString()).openConnection();
+            con.setRequestProperty("User-Agent", USER_AGENT);
             BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
             JsonObject main = gson.fromJson(reader, JsonElement.class).getAsJsonObject();
             reader.close();
@@ -58,6 +61,7 @@ public class UUIDFetcher {
         }
         try {
             HttpURLConnection con = (HttpURLConnection) new URL("https://use.gameapis.net/mc/player/profile/" + name).openConnection();
+            con.setRequestProperty("User-Agent", USER_AGENT);
             BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
             JsonObject main = gson.fromJson(reader, JsonElement.class).getAsJsonObject();
             reader.close();

@@ -2,12 +2,15 @@ package de.pkmnplatin.ztag.reflect;
 
 import com.mojang.authlib.GameProfile;
 import de.pkmnplatin.ztag.TagBase;
+import net.minecraft.server.v1_13_R2.DimensionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
 import org.bukkit.entity.Player;
 
+import java.awt.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -183,11 +186,16 @@ public class Reflection {
         Object packet = null;
         try {
             Constructor<?> packetConstructor = getNMSClass("PacketPlayOutRespawn").getConstructors()[1];
-            int enviroment = world.getEnvironment().getId();
             Object enumDifficulty = getEnumDifficulty(world.getDifficulty());
             Object worldType = getWorldType(world);
             Object enumGamemode = getEnumGamemode(player.getGameMode());
-            packet = packetConstructor.newInstance(enviroment, enumDifficulty, worldType , enumGamemode);
+            if(TagBase.getInstance().getVersion().isOlderThan(Version.v1_13_R1)) {
+                int enviroment = world.getEnvironment().getId();
+                packet = packetConstructor.newInstance(enviroment, enumDifficulty, worldType , enumGamemode);
+            } else {
+                Object dimensionManager = getNMSClass("DimensionManager").getMethod("a", int.class).invoke(null, world.getEnvironment().getId());
+                packet = packetConstructor.newInstance(dimensionManager, enumDifficulty, worldType , enumGamemode);
+            }
         } catch (Exception ex) {
             TagBase.log(ex);
         }

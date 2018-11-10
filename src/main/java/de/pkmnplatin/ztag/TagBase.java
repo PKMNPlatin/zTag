@@ -25,7 +25,6 @@ public class TagBase extends JavaPlugin {
 
     public static void log(Exception ex) {
         log(ex.getMessage());
-        ex.printStackTrace();
     }
 
     @Override

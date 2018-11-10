@@ -23,6 +23,7 @@ import java.util.*;
  */
 public class GameProfileFetcher {
 
+    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
     private static Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).registerTypeAdapter(GameProfile.class, new GameProfileSerializer()).registerTypeAdapter(PropertyMap.class, new PropertyMap.Serializer()).create();
     private static HashMap<UUID, GameProfile> gameProfileCache = new HashMap<>();
 
@@ -32,6 +33,7 @@ public class GameProfileFetcher {
         } else {
             try {
                 HttpURLConnection con = (HttpURLConnection) new URL("https://use.gameapis.net/mc/player/profile/" + uuid).openConnection();
+                con.setRequestProperty("User-Agent", USER_AGENT);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
                 JsonObject main = gson.fromJson(reader, JsonElement.class).getAsJsonObject();
                 reader.close();

@@ -36,7 +36,6 @@ public class zTag {
             TagBase.log("Player must be online!");
             return;
         }
-
         Bukkit.getPluginManager().callEvent(new zTagEvent(player, tag, skin, forWho));
     }
 

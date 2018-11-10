@@ -80,11 +80,7 @@ public class zTagEvent extends Event {
                 player.teleport(location);
                 if(updateChunk) {
                     Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
-                    for (int x = -10; x < 10; x++) {
-                        for (int z = -10; z < 10; z++) {
-                            player.getWorld().refreshChunk(chunk.getX() + x, chunk.getZ() + z);
-                        }
-                    }
+                    player.getWorld().refreshChunk(chunk.getX() + 8, chunk.getZ() + 8);
                 }
             } else {
                 sendPacket(player, removePlayer);
