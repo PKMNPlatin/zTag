@@ -1,6 +1,5 @@
 package de.pkmnplatin.ztag.reflect;
 
-import lombok.Getter;
 import org.bukkit.Bukkit;
 
 /**
@@ -20,12 +19,20 @@ public enum Version {
     v1_8_R2("1.8.2", 182),
     v1_8_R1("1.8.0 - 1.8.1", 181);
 
-    @Getter private String mcVersion;
-    @Getter private int versionId;
+    private String mcVersion;
+    private int versionId;
 
     Version(String mcVersion, int versionId) {
         this.mcVersion = mcVersion;
         this.versionId = versionId;
+    }
+
+    public String getMcVersion() {
+        return mcVersion;
+    }
+
+    public int getVersionId() {
+        return versionId;
     }
 
     public static Version detectServerVersion() {
