@@ -4,11 +4,8 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import de.pkmnplatin.ztag.profile.TagProfile;
 import de.pkmnplatin.ztag.reflect.Reflection;
-import de.pkmnplatin.ztag.util.GameProfileFetcher;
+import de.pkmnplatin.ztag.util.GameProfileBuilder;
 import de.pkmnplatin.ztag.util.UUIDFetcher;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -16,29 +13,72 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static de.pkmnplatin.ztag.reflect.Reflection.*;
 
 /**
  * Created by Jona on 06.07.2017.
  */
-@Getter
-@Setter
 public class zTagEvent extends Event {
 
-    private static final ExecutorService pool = Executors.newCachedThreadPool();
-
-    @Setter(AccessLevel.NONE) private Player player;
-    @Setter(AccessLevel.NONE) private TagProfile profile;
-    @Setter(AccessLevel.NONE) private List<Player> players = new ArrayList<Player>();
+    private Player player;
+    private TagProfile profile;
+    private List<Player> players = new ArrayList<Player>();
 
     private boolean updateChunk = true;
     private boolean forceSkinUpdate = true;
     private String tag;
     private String skin;
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public TagProfile getProfile() {
+        return profile;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public boolean isUpdateChunk() {
+        return updateChunk;
+    }
+
+    public boolean isForceSkinUpdate() {
+        return forceSkinUpdate;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public String getSkin() {
+        return skin;
+    }
+
+    public void setUpdateChunk(boolean updateChunk) {
+        this.updateChunk = updateChunk;
+    }
+
+    public void setForceSkinUpdate(boolean forceSkinUpdate) {
+        this.forceSkinUpdate = forceSkinUpdate;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
+    }
+
+    public static void setHandlerList(HandlerList handlerList) {
+        zTagEvent.handlerList = handlerList;
+    }
 
     public zTagEvent(Player player, String tag, String skin) {
         this(player, tag, skin, Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]));
@@ -73,12 +113,12 @@ public class zTagEvent extends Event {
             final double maxHealth = player.getMaxHealth();
             final double health = player.getHealth();
 
-            if(forceSkinUpdate) {
+            if (forceSkinUpdate) {
                 sendPacket(player, removePlayer);
                 sendPacket(player, respawnPacket);
                 sendPacket(player, addPlayer);
                 player.teleport(location);
-                if(updateChunk) {
+                if (updateChunk) {
                     Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
                     player.getWorld().refreshChunk(chunk.getX() + 8, chunk.getZ() + 8);
                 }
@@ -94,7 +134,7 @@ public class zTagEvent extends Event {
             player.setMaxHealth(maxHealth);
             player.setHealth(health);
 
-            if(!players.isEmpty()) {
+            if (!players.isEmpty()) {
                 for (Player p : players) {
                     if (p != player) {
                         sendPacket(p, removePlayer);
@@ -114,11 +154,14 @@ public class zTagEvent extends Event {
         if (uuid == null) {
             return gp;
         }
-        GameProfile fetched = GameProfileFetcher.getGameProfile(uuid);
-        if(fetched != null) {
+        GameProfile fetched = null;
+        try {
+            fetched = GameProfileBuilder.fetch(uuid);
             Collection<Property> props = fetched.getProperties().get("textures");
             gp.getProperties().removeAll("textures");
             gp.getProperties().putAll("textures", props);
+        } catch (IOException e) {
+//            e.printStackTrace();
         }
         return gp;
     }

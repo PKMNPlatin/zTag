@@ -2,7 +2,6 @@ package de.pkmnplatin.ztag;
 
 import de.pkmnplatin.ztag.profile.ProfileManager;
 import de.pkmnplatin.ztag.reflect.Version;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
@@ -10,14 +9,24 @@ import org.mcstats.Metrics;
 /**
  * Created by Jona on 16.06.2017.
  */
-@Getter
 public class TagBase extends JavaPlugin {
 
-    @Getter
     private static TagBase instance;
 
     private Version version;
     private ProfileManager profileManager;
+
+    public static TagBase getInstance() {
+        return instance;
+    }
+
+    public Version getVersion() {
+        return version;
+    }
+
+    public ProfileManager getProfileManager() {
+        return profileManager;
+    }
 
     public static void log(String msg) {
         instance.getLogger().info(msg);
